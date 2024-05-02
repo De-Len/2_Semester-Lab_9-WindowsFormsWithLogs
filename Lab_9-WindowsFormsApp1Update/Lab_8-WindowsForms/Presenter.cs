@@ -27,25 +27,29 @@ namespace Lab_8_WindowsForms
         {
             string path1 = _iView.FirstPath();
             string path2 = _iView.SecondPath();
+            string logMessage;
 
             List<string> result = _model.SyncDirectory(path1, path2, directoryChoice);
 
             if (result[0] == "Ошибка: директории уже синхронизированы")
             {
-                MessageBox.Show("Директории уже синхронизированы", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", "Директории уже синхронизированы");
+                logMessage = "Директории уже синхронизированы";
+                MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                XmlAndJsonLog("Error", logMessage);
                 return;
             }
             else if (result[0] == "Ошибка: бяка в пути 1 директории")
             {
-                MessageBox.Show("У вас бяка в пути 1 директории", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", "У вас бяка в пути 1 директории");
+                logMessage = "У вас бяка в пути 1 директории";
+                MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                XmlAndJsonLog("Error", logMessage);
                 return;
             }
             else if (result[0] == "Ошибка: бяка в пути 2 директории")
             {
-                MessageBox.Show("У вас бяка в пути 2 директории", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", "У вас бяка в пути 2 директории");
+                logMessage = "У вас бяка в пути 2 директории";
+                MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                XmlAndJsonLog("Error", logMessage);
                 return;
             }
 
@@ -71,20 +75,30 @@ namespace Lab_8_WindowsForms
 
             foreach (string fileInList in createdFiles)
             {
-                _iView.LogOutput += $"Файл \"{fileInList}\" создан в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n";
-                XmlAndJsonLog("Info", $"Файл \"{fileInList}\" создан в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n");
+                string action = "создан";
+
+                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                _iView.LogOutput += logMessage + "\n";
+                XmlAndJsonLog("Info", logMessage);
             }
+
             foreach (string fileInList in deletedFiles)
             {
-                _iView.LogOutput += $"Файл \"{fileInList}\" удалён в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n";
-                XmlAndJsonLog("Info", $"Файл \"{fileInList}\" удалён в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n");
+                string action = "удалён";
+
+                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                _iView.LogOutput += logMessage + "\n";
+                XmlAndJsonLog("Info", logMessage);
             }
+
             foreach (string fileInList in replacedFiles)
             {
-                _iView.LogOutput += $"Файл \"{fileInList}\" изменён в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n";
-                XmlAndJsonLog("Info", $"Файл \"{fileInList}\" изменён в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории \n");
+                string action = "изменён";
+
+                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                _iView.LogOutput += logMessage + "\n";
+                XmlAndJsonLog("Info", logMessage);
             }
-            NLog.LogManager.Shutdown();
         }
 
 
