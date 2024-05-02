@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Microsoft.Win32.SafeHandles;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
-
+using NLog;
 
 
 namespace Lab_8_WindowsForms
@@ -28,6 +29,7 @@ namespace Lab_8_WindowsForms
             string path1 = _iView.FirstPath();
             string path2 = _iView.SecondPath();
             string logMessage;
+            NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
             List<string> result = _model.SyncDirectory(path1, path2, directoryChoice);
 
@@ -35,21 +37,21 @@ namespace Lab_8_WindowsForms
             {
                 logMessage = "Директории уже синхронизированы";
                 MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", logMessage);
+                Logger.Error("Директории уже синхронизированы");
                 return;
             }
             else if (result[0] == "Ошибка: бяка в пути 1 директории")
             {
                 logMessage = "У вас бяка в пути 1 директории";
                 MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", logMessage);
+                Logger.Error("У вас бяка в пути 1 директории");
                 return;
             }
             else if (result[0] == "Ошибка: бяка в пути 2 директории")
             {
                 logMessage = "У вас бяка в пути 2 директории";
                 MessageBox.Show(logMessage, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                XmlAndJsonLog("Error", logMessage);
+                Logger.Error("У вас бяка в пути 2 директории");
                 return;
             }
 
@@ -73,44 +75,50 @@ namespace Lab_8_WindowsForms
                 }
             }
 
+
+
+
             foreach (string fileInList in createdFiles)
             {
-                string action = "создан";
-
-                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
-                _iView.LogOutput += logMessage + "\n";
-                XmlAndJsonLog("Info", logMessage);
+                OutputInfo(fileInList, "создан", directoryChoice);
             }
 
             foreach (string fileInList in deletedFiles)
             {
-                string action = "удалён";
-
-                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
-                _iView.LogOutput += logMessage + "\n";
-                XmlAndJsonLog("Info", logMessage);
+                OutputInfo(fileInList, "удалён", directoryChoice);
             }
 
             foreach (string fileInList in replacedFiles)
             {
-                string action = "изменён";
-
-                logMessage = $"Файл \"{fileInList}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
-                _iView.LogOutput += logMessage + "\n";
-                XmlAndJsonLog("Info", logMessage);
+                OutputInfo(fileInList, "изменён", directoryChoice);
             }
+
+            NLog.LogManager.Shutdown();
         }
 
-
-        public static void XmlAndJsonLog(string type, string message)
+        void OutputInfo(string file, string action, DirectoryChoice directoryChoice)
         {
-            Quote quote = new Quote
+            string logMessage;
+            NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
+            if (action == "создан")
             {
-                Date = DateTime.Now.ToString("dd.MM.yyyy|HH:mm:ss"),
-                Type = type,
-                Message = message,
-            };
-            Model.WriteLog(quote);
+                logMessage = $"Файл \"{file}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                _iView.LogOutput += logMessage + "\n";
+                Logger.Info(logMessage);
+            }
+            else if (action == "удалён")
+            {
+                    logMessage = $"Файл \"{file}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                    _iView.LogOutput += logMessage + "\n";
+                    Logger.Info(logMessage);
+            }
+            else if (action == "изменён")
+            {
+                    logMessage = $"Файл \"{file}\" {action} в {(directoryChoice == DirectoryChoice.FirstDirectory ? "первой" : "второй")} директории";
+                    _iView.LogOutput += logMessage + "\n";
+                    Logger.Info(logMessage);
+            }
+            NLog.LogManager.Shutdown();
         }
 
     }

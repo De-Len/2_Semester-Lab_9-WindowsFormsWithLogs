@@ -80,7 +80,7 @@ namespace Lab_8_WindowsForms
             return result;
         }
 
-        private void CopyMissingFiles(List<string> missingFiles, string sourceDir, string destinationDir, List<string> operation, string operationType)
+        private void CopyMissingFiles(List<string> missingFiles, string sourceDir, string destinationDir, List<string> operations, string operationType)
         {
             foreach (string fileName in missingFiles)
             {
@@ -88,21 +88,21 @@ namespace Lab_8_WindowsForms
                 string destinationFile = Path.Combine(destinationDir, fileName);
 
                 File.Copy(sourceFile, destinationFile, true); // Переписываем файл, если уже существует
-                operation.Add($"{operationType}: {fileName}");
+                operations.Add($"{operationType}: {fileName}");
             }
         }
 
-        private void DeleteFiles(List<string> filesToDelete, string directoryPath, List<string> operation, string operationType)
+        private void DeleteFiles(List<string> filesToDelete, string directoryPath, List<string> operations, string operationType)
         {
             foreach (string fileName in filesToDelete)
             {
                 string filePath = Path.Combine(directoryPath, fileName);
                 File.Delete(filePath);
-                operation.Add($"{operationType}: {fileName}");
+                operations.Add($"{operationType}: {fileName}");
             }
         }
 
-        private void ReplaceFiles(List<string> modifiedFiles, string sourceDir, string destinationDir, List<string> operation, string operationType)
+        private void ReplaceFiles(List<string> modifiedFiles, string sourceDir, string destinationDir, List<string> operations, string operationType)
         {
             foreach (string fileName in modifiedFiles)
             {
@@ -111,7 +111,7 @@ namespace Lab_8_WindowsForms
 
                 File.Delete(destinationFile);
                 File.Copy(sourceFile, destinationFile, true); // Переписываем файл, если уже существует
-                operation.Add($"{operationType}: {fileName}");
+                operations.Add($"{operationType}: {fileName}");
             }
         }
 
@@ -121,59 +121,6 @@ namespace Lab_8_WindowsForms
             byte[] bytes2 = File.ReadAllBytes(filePath2);
             return bytes1.SequenceEqual(bytes2);
         }
-
-        public static void WriteLog(Quote q)
-        {
-            var settings = new System.Xml.XmlWriterSettings
-            {
-                OmitXmlDeclaration = true,
-                Indent = true
-            };
-
-            using (StreamWriter streamWriter = new StreamWriter($"C:\\Users\\princedelen\\source\\repos\\Lab_9-WindowsFormsApp1Update\\Lab_8-WindowsForms\\Logs\\{DateTime.Now.ToString("dd.MM.yyyy")}.xml", true))
-            {
-                using (XmlWriter writer = XmlWriter.Create(streamWriter, settings))
-                {
-                    writer.WriteStartElement("Log");
-                    writer.WriteAttributeString("DateTime", q.Date);
-                    writer.WriteElementString("Type", q.Type);
-                    writer.WriteElementString("Message", q.Message);
-                    writer.WriteEndElement();
-                }
-            }
-
-
-            using (FileStream fs = new FileStream($"C:\\Users\\princedelen\\source\\repos\\Lab_9-WindowsFormsApp1Update\\Lab_8-WindowsForms\\Logs\\{DateTime.Now.ToString("dd.MM.yyyy")}.json", FileMode.Append))
-            {
-                using (StreamWriter streamWriter = new StreamWriter(fs))
-                {
-                    using (JsonWriter writer = new JsonTextWriter(streamWriter))
-                    {
-                        if (fs.Length > 0)
-                        {
-                            streamWriter.WriteLine(","); // Разделитель
-                        }
-                        writer.WriteStartObject();
-                        writer.WritePropertyName("Log");
-                        writer.WriteStartObject();
-                        writer.WritePropertyName("DateTime");
-                        writer.WriteValue(q.Date);
-                        writer.WritePropertyName("Type");
-                        writer.WriteValue(q.Type);
-                        writer.WritePropertyName("Message");
-                        writer.WriteValue(q.Message);
-                        writer.WriteEndObject();
-                        writer.WriteEndObject();
-                    }
-                }
-            }
-        }
-    }
-    public class Quote
-    {
-        public string Date;
-        public string Message;
-        public string Type;
     }
 
     // "Кичливость философии не совмещается со смирением"
